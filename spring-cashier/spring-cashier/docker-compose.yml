@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: midterm
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: welcome
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+
+  haproxy:
+    image: eeacms/haproxy
+    depends_on: [cashier1,cashier2]
+      # - cashier2
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "8080:5000"
+      - "8081:1936"
+      - "8082:8080"
+    # environment:
+      # BACKENDS: "cashier"
+      
+
+  cashier1:
+    image: spring-cashier
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/midterm
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: welcome
+    # deploy:
+    #   replicas: 2
+    depends_on:
+      - db
+    ports:
+      - 9000-9001:9090
+
+  cashier2:
+    image: spring-cashier
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/midterm
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: welcome
+    # deploy:
+    #   replicas: 2
+    depends_on:
+      - db
+    ports:
+      - 9000-9001:9090
+
+
+
+volumes:
+  db_data:

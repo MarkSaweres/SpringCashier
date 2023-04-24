@@ -2,30 +2,38 @@ package com.example.springcashier;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import java.time.LocalDate;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
+@Entity
 @Data
 @RequiredArgsConstructor
-class Order {
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String drink ;
-    private String milk ;
-    private String size ;
-    private String total ;
-    private String register ;
-    private String status ;
-    
+    private String drink;
+    private String milk;
+    private String size;
+    private String total;
+    private String register;
+    private String status;
+
     public static Order GetNewOrder() {
-     	Order o = new Order() ;
+        Order o = new Order();
 
-    	o.drink = "Caffe Americano" ;
-    	o.milk = "Soy Milk" ;
-    	o.size = "Venti" ;
-    	o.status = "Ready for Payment" ;
-    	o.total = "$3.16" ;
+        o.drink = "Caffe Americano";
+        o.milk = "Soy Milk";
+        o.size = "Venti";
+        o.status = "Ready for Payment";
+        o.total = "$3.16";
 
-    	return o ;
+        return o;
     }
-
 
 }
 
