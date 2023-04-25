@@ -6,27 +6,25 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class OrderService {
+public class CashierOrderService {    
+    @Autowired
+    private CashierOrderRepository orderRepository;
 
-    
-    private OrderRepository orderRepository;
-
-    public Order createOrder(Order order) {
+    public CashierOrder createOrder(CashierOrder order) {
         return orderRepository.save(order);
     }
 
-    public List<Order> getAllOrders() {
+    public List<CashierOrder> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public Order getOrderById(Long id) {
+    public CashierOrder getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public Order updateOrder(Long id, Order order) {
-        Order existingOrder = getOrderById(id);
+    public CashierOrder updateOrder(Long id, CashierOrder order) {
+        CashierOrder existingOrder = getOrderById(id);
         if (existingOrder != null) {
-            // Update the fields you want to update
             existingOrder.setDrink(order.getDrink());
             existingOrder.setMilk(order.getMilk());
             existingOrder.setSize(order.getSize());
