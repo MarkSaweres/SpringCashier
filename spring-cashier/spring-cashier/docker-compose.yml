@@ -5,11 +5,13 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: midterm
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: welcome
+      MYSQL_USER: admin1
+      MYSQL_PASSWORD: welcome1
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   haproxy:
     image: eeacms/haproxy
@@ -18,11 +20,11 @@ services:
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     ports:
-      - "8080:5000"
+      #- "8080:5000"
       - "8081:1936"
-      - "8082:8080"
-    # environment:
-      # BACKENDS: "cashier"
+      - "9090:9090"
+    #environment:
+    #  BACKENDS: "cashier1"
       
 
   cashier1:
@@ -35,8 +37,8 @@ services:
     #   replicas: 2
     depends_on:
       - db
-    ports:
-      - 9000-9001:9090
+    #ports:
+    #  - 9000:9090
 
   cashier2:
     image: spring-cashier
@@ -48,10 +50,8 @@ services:
     #   replicas: 2
     depends_on:
       - db
-    ports:
-      - 9000-9001:9090
-
-
+    #ports:
+    #  - 9001:9090
 
 volumes:
   db_data:
