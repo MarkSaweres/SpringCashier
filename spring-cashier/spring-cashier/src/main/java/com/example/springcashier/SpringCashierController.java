@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringCashierController {
 
     @Autowired
-    private OrderService orderService;
+    private CashierOrderService orderService;
 
     @GetMapping
     public String getAction( @ModelAttribute("command") Command command, 
@@ -49,8 +49,18 @@ public class SpringCashierController {
         model.addAttribute( "message", message ) ;
         model.addAttribute( "server",  host_name + "/" + server_ip ) ;
 
+        String selectedStore = (String) session.getAttribute("store");
+        if (selectedStore != null) {
+            command.setStores(selectedStore);
+        }
+
         return "starbucks" ;
 
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
 
@@ -67,7 +77,7 @@ public class SpringCashierController {
 
         /* Process Post Action */
         if (action.equals("Place Order")) {
-            Order order = Order.GetNewOrder();
+            CashierOrder order = CashierOrder.GetNewOrder();
             order.setRegister(command.getRegister());
             order = orderService.createOrder(order); // Save the new order in the database
             message = "Starbucks Reserved Order" + "\n\n" +
@@ -80,9 +90,10 @@ public class SpringCashierController {
                     "Status:   " + order.getStatus() + "\n";
         } else if (action.equals("Get Order")) {
             // Retrieve the latest order from the database
-            List<Order> orders = orderService.getAllOrders();
-            Order latestOrder = orders.isEmpty() ? null : orders.get(orders.size() - 1);
-
+            List<CashierOrder> orders = orderService.getAllOrders();
+            CashierOrder latestOrder = orders.isEmpty() ? null : orders.get(orders.size() - 1);
+            HttpSession session = request.getSession();
+            session.setAttribute("store", command.getStores());
             if (latestOrder != null) {
                 message = "Starbucks Reserved Order" + "\n\n" +
                         "Drink: " + latestOrder.getDrink() + "\n" +
@@ -97,7 +108,7 @@ public class SpringCashierController {
             }
         } else if (action.equals("Clear Order")) {
             // Delete the latest order from the database
-            List<Order> orders = orderService.getAllOrders();
+            List<CashierOrder> orders = orderService.getAllOrders();
             if (!orders.isEmpty()) {
                 orderService.deleteOrder(orders.get(orders.size() - 1).getId());
             }
@@ -120,8 +131,29 @@ public class SpringCashierController {
         model.addAttribute("server", host_name + "/" + server_ip);
 
         return "starbucks";
+
+
     }
+
+    @PostMapping("/selectStore")
+    public String selectStore(@RequestParam String store, HttpSession session) {
+    session.setAttribute("store", store);
+    return "redirect:/";
+    }
+
+    public String placeOrder(@ModelAttribute("order") CashierOrder order, HttpSession session) {
+        String store = (String) session.getAttribute("store");
+        order.setStore(store);
+        orderService.createOrder(order);
+        return "redirect:/";
+    }
+
+
+ 
+
+    
+}
     
 
-}
+
 
